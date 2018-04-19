@@ -97,6 +97,6 @@ body {
 
 .video-js .vjs-text-track-display div {
   	background: transparent !important;
-  	font-family: Helvetica !important;
+  	font-family: Helvetica, sans-serif !important;
   	/*font-size: 1.5em !important;*/
 }
