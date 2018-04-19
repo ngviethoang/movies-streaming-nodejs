@@ -114,36 +114,40 @@
 				},
 				methods: {
 					showMovie(movie) {
-						let videoName = this.getVideo(movie)
-						let subtitle = this.getSubtitle(movie)
-						if(videoName !== undefined) {
-							player.src(videoName)
+						let videoPath = this.getVideoPath(movie)
+						let subtitlePath = this.getSubtitlePath(movie)
 
-							for(let track of player.textTracks_.tracks_)
-                                player.removeRemoteTextTrack(track)
-
-							if(subtitle !== undefined) {
-                                player.addRemoteTextTrack({
-									kind: 'captions',
-									language: 'Default',
-									label: 'Default',
-									src: subtitle
-                                })
-                            }
-
-							player.load()
-
-							$('.videoInfo').find('h2').html(movie.name)
-						}
+						this.setPlayer(movie.name, videoPath, subtitlePath)
 					},
                     showSeries(series) {
 
 					},
-					getVideo(movie) {
+					setPlayer(videoName, videoPath, subtitlePath) {
+                        if(videoPath !== undefined) {
+                            player.src(videoPath)
+
+                            for(let track of player.textTracks_.tracks_)
+                                player.removeRemoteTextTrack(track)
+
+                            if(subtitlePath !== undefined) {
+                                player.addRemoteTextTrack({
+                                    kind: 'captions',
+                                    language: 'Default',
+                                    label: 'Default',
+                                    src: subtitlePath
+                                }, false)
+                            }
+
+                            player.load()
+
+                            $('.videoInfo').find('h2').html(videoName)
+                        }
+					},
+					getVideoPath(movie) {
 						let video = movie.files.find(f => f.type === 'video')
 						return (video !== undefined ? (BASE_DIR + movie.name + '/' + video.name) : undefined)
 					},
-					getSubtitle(movie) {
+					getSubtitlePath(movie) {
 						let sub = movie.files.find(f => f.type === 'subtitle')
 						return (sub !== undefined ? (BASE_DIR + movie.name + '/' + sub.name) : undefined)
 					}
