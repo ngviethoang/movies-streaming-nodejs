@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<title>My Movies</title>
+
+	<link rel="icon" href=".lib/favicon.ico" type="image/x-icon" />
+
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href=".lib/bootstrap-4.0.0-dist/css/bootstrap.min.css" rel="stylesheet">
+
+	<link href=".lib/css/video-js.css" rel="stylesheet">
+	<link href=".lib/css/videojs-seek-buttons.css" rel="stylesheet">
+	<link href=".lib/css/style.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark">
+	<div id="app" class="container-fluid mt-3">
+		<div class="row">
+			<div class="col-md-8 col-sm-12" id="videoContainer">
+				<video id="myVideo" class="video-js vjs-default-skin vjs-fluid" controls preload="auto"
+					poster='.lib/video-poster.png'
+					data-setup='{"aspectRatio":"16:9", "playbackRates": [0.5, 1, 1.5, 2] }'>
+					<source src="a" type='video/mp4' />
+					<track kind="captions" src="a">
+				</video>
+				<div class="videoInfo mt-3">
+					<h2 class="text-light font-weight-light"></h2>
+				</div>
+			</div>
+			<div class="col-md-4 col-sm-12" id="listContainer">
+				<ul class="nav nav-pills" id="moviesTab" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link active" id="home-tab" data-toggle="tab" href="#moviesList" role="tab" aria-controls="home" aria-selected="true">
+							{{ movies.length }} Movies
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="profile-tab" data-toggle="tab" href="#seriesList" role="tab" aria-controls="profile" aria-selected="false">
+							{{ seriesList.length }} Series
+						</a>
+					</li>
+				</ul>
+				<div class="tab-content" id="moviesTabContent">
+					<div class="tab-pane fade show active" id="moviesList" role="tabpanel">
+						<ul class="list-group list-group-flush">
+							<a v-for="movie of movies" @click="showMovie(movie)" href="#" class="list-group-item list-group-item-action text-light">
+								{{ movie.name }}
+							</a>
+						</ul>
+					</div>
+					<div class="tab-pane fade" id="seriesList" role="tabpanel">
+						<ul class="list-group list-group-flush">
+							<a v-for="series of seriesList" @click="showSeries(series)" href="#" class="list-group-item list-group-item-action text-light">
+								{{ series.name }}
+							</a>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src=".lib/js/jquery-3.3.1.min.js"></script>
+	<script src=".lib/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+	<script src=".lib/js/vue.js"></script>
+	<script src=".lib/js/video.js"></script>
+	<script src=".lib/js/videojs-seek-buttons.min.js"></script>
+	<script src=".lib/js/videojs-contrib-hls.min.js"></script>
+	<script>
+		$(document).ready(() => {
+			const BASE_DIR = 'Movies/'
+			// const BASE_URL = 'http://localhost:6969'
+			const BASE_URL = 'http://192.168.0.109:6969'
+
+			let player = videojs('myVideo')
+            player.seekButtons({
+                forward: 10,
+                back: 10
+            });
+
+			$('body').keypress(e => {
+			    switch (e.keyCode) {
+					case 37:
+					    $('#myVideo').find('.vjs-seek-button.skip-back').click()
+						break;
+                    case 39:
+                        $('#myVideo').find('.vjs-seek-button.skip-forward').click()
+                        break;
+				}
+			})
+
+			new Vue({
+				el: '#listContainer',
+				data: {
+					movies: [],
+					seriesList: [],
+				},
+				created() {
+					$.getJSON(BASE_URL + '/api/movies', data => {
+						for(let file of data) {
+						    switch (file.type) {
+								case 'movies':
+								    this.movies.push(file)
+									break;
+								case 'series':
+								    this.seriesList.push(file)
+									break
+							}
+						}
+					})
+				},
+				methods: {
+					showMovie(movie) {
+						let videoName = this.getVideo(movie)
+						let subtitle = this.getSubtitle(movie)
+						if(videoName !== undefined) {
+							player.src(videoName)
+
+							for(let track of player.textTracks_.tracks_)
+                                player.removeRemoteTextTrack(track)
+
+							if(subtitle !== undefined) {
+                                player.addRemoteTextTrack({
+									kind: 'captions',
+									language: 'Default',
+									label: 'Default',
+									src: subtitle
+                                })
+                            }
+
+							player.load()
+
+							$('.videoInfo').find('h2').html(movie.name)
+						}
+					},
+                    showSeries(series) {
+
+					},
+					getVideo(movie) {
+						let video = movie.files.find(f => f.type === 'video')
+						return (video !== undefined ? (BASE_DIR + movie.name + '/' + video.name) : undefined)
+					},
+					getSubtitle(movie) {
+						let sub = movie.files.find(f => f.type === 'subtitle')
+						return (sub !== undefined ? (BASE_DIR + movie.name + '/' + sub.name) : undefined)
+					}
+				}
+			})
+		})
+	</script>
+</body>
+</html>
