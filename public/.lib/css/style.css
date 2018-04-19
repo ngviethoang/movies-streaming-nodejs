@@ -8,7 +8,8 @@ body {
 	overflow: scroll;
 }
 
-#listContainer ul a {
+#listContainer ul a,
+#listContainer ul li {
 	background: transparent;
 }
 

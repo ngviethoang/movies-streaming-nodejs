@@ -10,7 +10,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => res.render('index'));
 
 app.get('/api/movies', async (req, res) => {
-    res.json(await movies.getMovies())
+    let series = req.query.s;
+
+    if(series !== undefined) {
+        res.json((await movies.getMovies()).filter(m => m.type === 'series'))
+    } else {
+        res.json(await movies.getMovies())
+    }
 });
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));

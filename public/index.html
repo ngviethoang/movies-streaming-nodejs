@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href=".lib/bootstrap-4.0.0-dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href=".lib/css/fontawesome-free-5.0.10/web-fonts-with-css/css/fontawesome-all.min.css" rel="stylesheet">
 
 	<link href=".lib/css/video-js.css" rel="stylesheet">
 	<link href=".lib/css/videojs-seek-buttons.css" rel="stylesheet">
@@ -22,12 +23,14 @@
 			<div class="col-md-8 col-sm-12" id="videoContainer">
 				<video id="myVideo" class="video-js vjs-default-skin vjs-fluid" controls preload="auto"
 					poster='.lib/video-poster.png'
-					data-setup='{"aspectRatio":"16:9", "playbackRates": [0.5, 1, 1.5, 2] }'>
+					data-setup='{"aspectRatio":"16:9"}'>
 					<source src="a" type='video/mp4' />
-					<track kind="captions" src="a">
+					<track kind="captions" src="a" />
 				</video>
 				<div class="videoInfo mt-3">
-					<h2 class="text-light font-weight-light"></h2>
+					<h2 class="text-light font-weight-light">
+						<i class="fas fa-desktop"></i> <span></span>
+					</h2>
 				</div>
 			</div>
 			<div class="col-md-4 col-sm-12" id="listContainer">
@@ -53,9 +56,18 @@
 					</div>
 					<div class="tab-pane fade" id="seriesList" role="tabpanel">
 						<ul class="list-group list-group-flush">
-							<a v-for="series of seriesList" @click="showSeries(series)" href="#" class="list-group-item list-group-item-action text-light">
-								{{ series.name }}
-							</a>
+							<span v-for="series of seriesList">
+								<a :href="'#' + series.name" class="list-group-item list-group-item-action text-light" data-toggle="collapse" role="button" aria-expanded="false">
+									{{ series.name }}
+								</a>
+								<div :id="series.name" class="collapse ml-4">
+									<ul class="list-group list-group-flush">
+										<a v-for="file of series.files" v-if="file.type === 'video'" @click="showMovieInSeries(series, file)" href="#" class="list-group-item list-group-item-action text-light">
+											{{ file.name.replace('.mp4', '') }}
+										</a>
+									</ul>
+								</div>
+							</span>
 						</ul>
 					</div>
 				</div>
@@ -69,91 +81,6 @@
 	<script src=".lib/js/video.js"></script>
 	<script src=".lib/js/videojs-seek-buttons.min.js"></script>
 	<script src=".lib/js/videojs-contrib-hls.min.js"></script>
-	<script>
-		$(document).ready(() => {
-			const BASE_DIR = 'Movies/'
-			// const BASE_URL = 'http://localhost:6969'
-			const BASE_URL = 'http://192.168.0.109:6969'
-
-			let player = videojs('myVideo')
-            player.seekButtons({
-                forward: 10,
-                back: 10
-            });
-
-			$('body').keypress(e => {
-			    switch (e.keyCode) {
-					case 37:
-					    $('#myVideo').find('.vjs-seek-button.skip-back').click()
-						break;
-                    case 39:
-                        $('#myVideo').find('.vjs-seek-button.skip-forward').click()
-                        break;
-				}
-			})
-
-			new Vue({
-				el: '#listContainer',
-				data: {
-					movies: [],
-					seriesList: [],
-				},
-				created() {
-					$.getJSON(BASE_URL + '/api/movies', data => {
-						for(let file of data) {
-						    switch (file.type) {
-								case 'movies':
-								    this.movies.push(file)
-									break;
-								case 'series':
-								    this.seriesList.push(file)
-									break
-							}
-						}
-					})
-				},
-				methods: {
-					showMovie(movie) {
-						let videoPath = this.getVideoPath(movie)
-						let subtitlePath = this.getSubtitlePath(movie)
-
-						this.setPlayer(movie.name, videoPath, subtitlePath)
-					},
-                    showSeries(series) {
-
-					},
-					setPlayer(videoName, videoPath, subtitlePath) {
-                        if(videoPath !== undefined) {
-                            player.src(videoPath)
-
-                            for(let track of player.textTracks_.tracks_)
-                                player.removeRemoteTextTrack(track)
-
-                            if(subtitlePath !== undefined) {
-                                player.addRemoteTextTrack({
-                                    kind: 'captions',
-                                    language: 'Default',
-                                    label: 'Default',
-                                    src: subtitlePath
-                                }, false)
-                            }
-
-                            player.load()
-
-                            $('.videoInfo').find('h2').html(videoName)
-                        }
-					},
-					getVideoPath(movie) {
-						let video = movie.files.find(f => f.type === 'video')
-						return (video !== undefined ? (BASE_DIR + movie.name + '/' + video.name) : undefined)
-					},
-					getSubtitlePath(movie) {
-						let sub = movie.files.find(f => f.type === 'subtitle')
-						return (sub !== undefined ? (BASE_DIR + movie.name + '/' + sub.name) : undefined)
-					}
-				}
-			})
-		})
-	</script>
+	<script src=".lib/js/script.js"></script>
 </body>
 </html>
