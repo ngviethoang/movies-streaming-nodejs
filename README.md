@@ -6,7 +6,7 @@
 ### Tools
 
 ##### Convert Srt to Vtt (all files)
-    npm srt2vtt
+    npm run srt2vtt
 
 ##### Convert MKV To MP4
     ffmpeg -i my_movie.mkv -vcodec copy -acodec copy my_movie.mp4
