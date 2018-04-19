@@ -52,10 +52,12 @@ $(document).ready(() => {
                 let video = movie.files.find(f => f.type === 'video')
                 let videoPath = (video !== undefined) ? (MOVIES_BASE_DIR + movie.dir + '/' + video.name) : undefined
 
-                let sub = movie.files.find(f => f.type === 'subtitle')
-                let subtitlePath = (sub !== undefined) ? (MOVIES_BASE_DIR + movie.dir + '/' + sub.name) : undefined
+                let subtitlePaths =
+                    movie.files
+                        .filter(f => f.type === 'subtitle')
+                        .map(f => (MOVIES_BASE_DIR + movie.dir + '/' + f.name))
 
-                this.setPlayer(movie.name, videoPath, subtitlePath)
+                this.setPlayer(movie.name, videoPath, subtitlePaths)
 
                 //Save to history
                 this.history = JSON.parse(localStorage.getItem('history'))
@@ -77,22 +79,26 @@ $(document).ready(() => {
 
                 let subtitlePath = (file.sub !== undefined) ? (MOVIES_BASE_DIR + series.dir + '/' + file.sub) : undefined
 
-                this.setPlayer(series.name + ': ' + file.name.replace('.mp4', ''), videoPath, subtitlePath)
+                this.setPlayer(series.name + ': ' + file.name.replace('.mp4', ''), videoPath, [subtitlePath])
             },
-            setPlayer(videoName, videoPath, subtitlePath) {
+            setPlayer(videoName, videoPath, subtitlePaths) {
                 if(videoPath !== undefined) {
                     player.src(videoPath)
 
                     for(let track of player.textTracks_.tracks_)
                         player.removeRemoteTextTrack(track)
 
-                    if(subtitlePath !== undefined) {
-                        player.addRemoteTextTrack({
-                            kind: 'captions',
-                            language: 'Default',
-                            label: 'Default',
-                            src: subtitlePath
-                        }, false)
+                    if(Array.isArray(subtitlePaths)) {
+                        for(let subtitlePath of subtitlePaths) {
+                            let lang = subtitlePath.split('/').splice(-1)[0].split('.')[0]
+
+                            player.addRemoteTextTrack({
+                                kind: 'captions',
+                                language: lang,
+                                label: lang,
+                                src: subtitlePath
+                            }, false)
+                        }
                     }
 
                     player.load()
