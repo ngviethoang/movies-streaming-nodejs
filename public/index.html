@@ -20,55 +20,72 @@
 <body class="bg-dark">
 	<div id="app" class="container-fluid mt-3">
 		<div class="row">
-			<div class="col-md-8 col-sm-12" id="videoContainer">
+			<div class="col-md-8 col-12" id="videoContainer">
 				<video id="myVideo" class="video-js vjs-default-skin vjs-fluid" controls preload="auto"
 					poster='.lib/video-poster.png'
 					data-setup='{"aspectRatio":"16:9"}'>
 					<source src="a" type='video/mp4' />
 					<track kind="captions" src="a" />
 				</video>
-				<div class="videoInfo mt-3">
+				<div class="videoInfo mt-3 mb-3">
 					<h2 class="text-light font-weight-light">
 						<i class="fas fa-desktop"></i> <span></span>
 					</h2>
 				</div>
 			</div>
-			<div class="col-md-4 col-sm-12" id="listContainer">
-				<ul class="nav nav-pills" id="moviesTab" role="tablist">
-					<li class="nav-item">
-						<a class="nav-link active" id="home-tab" data-toggle="tab" href="#moviesList" role="tab" aria-controls="home" aria-selected="true">
-							{{ movies.length }} Movies
-						</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" id="profile-tab" data-toggle="tab" href="#seriesList" role="tab" aria-controls="profile" aria-selected="false">
-							{{ seriesList.length }} Series
-						</a>
-					</li>
-				</ul>
-				<div class="tab-content" id="moviesTabContent">
-					<div class="tab-pane fade show active" id="moviesList" role="tabpanel">
-						<ul class="list-group list-group-flush">
-							<a v-for="movie of movies" @click="showMovie(movie)" href="#" class="list-group-item list-group-item-action text-light">
-								{{ movie.name }}
-							</a>
-						</ul>
-					</div>
-					<div class="tab-pane fade" id="seriesList" role="tabpanel">
-						<ul class="list-group list-group-flush">
-							<span v-for="series of seriesList">
-								<a :href="'#' + series.name" class="list-group-item list-group-item-action text-light" data-toggle="collapse" role="button" aria-expanded="false">
-									{{ series.name }}
+			<div class="col-md-4 col-12" id="vue">
+				<div class="row mb-3">
+					<div class="col-md-12 col-10">
+						<ul class="nav nav-pills" id="moviesTab" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" id="home-tab" data-toggle="tab" href="#moviesList" role="tab" aria-controls="home" aria-selected="true">
+									{{ movies.length }} Movies
 								</a>
-								<div :id="series.name" class="collapse ml-4">
-									<ul class="list-group list-group-flush">
-										<a v-for="file of series.files" v-if="file.type === 'video'" @click="showMovieInSeries(series, file)" href="#" class="list-group-item list-group-item-action text-light">
-											{{ file.name.replace('.mp4', '') }}
-										</a>
-									</ul>
-								</div>
-							</span>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="profile-tab" data-toggle="tab" href="#seriesList" role="tab" aria-controls="profile" aria-selected="false">
+									{{ seriesList.length }} Series
+								</a>
+							</li>
 						</ul>
+						<div id="moviesTabContent" class="tab-content">
+							<div class="tab-pane fade show active" id="moviesList" role="tabpanel">
+								<ul class="list-group list-group-flush">
+									<a v-for="movie of movies" @click="showMovie(movie)" :class="{'text-info' : movie.watched, 'text-light' : !movie.watched}" href="#" class="list-group-item list-group-item-action">
+										{{ movie.name }}
+									</a>
+								</ul>
+							</div>
+							<div class="tab-pane fade" id="seriesList" role="tabpanel">
+								<ul class="list-group list-group-flush">
+									<span v-for="series of seriesList">
+										<a :href="'#' + series.name" class="list-group-item list-group-item-action text-light" data-toggle="collapse" role="button" aria-expanded="false">
+											{{ series.name }}
+										</a>
+										<div :id="series.name" class="collapse ml-4">
+											<ul class="list-group list-group-flush">
+												<a v-for="file of series.files" v-if="file.type === 'video'" @click="showMovieInSeries(series, file)" href="#" class="list-group-item list-group-item-action text-light">
+													{{ file.name.replace('.mp4', '') }}
+												</a>
+											</ul>
+										</div>
+									</span>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-if="history !== null" id="history" class="row mt-2 mb-3">
+					<div class="col">
+						<button @click="clearHistory()" type="button" class="btn btn-sm btn-outline-light mt-2 float-right">
+							<i class="fas fa-trash"></i> Clear History
+						</button>
+						<button @click="toggleWatchedMovies($event)" type="button" class="btn btn-sm btn-outline-light mt-2 mr-2 float-right">
+							<i class="fas fa-film"></i> <span>Watched</span> Movies
+						</button>
+						<button @click="showLatestMovie()" type="button" class="btn btn-sm btn-outline-light mt-2 mr-2 float-right">
+							<i class="fas fa-play"></i> Latest Movie
+						</button>
 					</div>
 				</div>
 			</div>

@@ -1,16 +1,18 @@
-body {
-
+ul a {
+	background: transparent !important;
 }
 
 #moviesTabContent ul {
 	min-height: 400px;
-	max-height: 600px;
+	max-height: 550px;
 	overflow: scroll;
 }
 
-#listContainer ul a,
-#listContainer ul li {
-	background: transparent;
+/*Small devices (landscape phones, less than 768px)*/
+@media (max-width: 767.98px) {
+	#moviesTabContent ul {
+		max-height: 400px;
+	}
 }
 
 .video-js {
