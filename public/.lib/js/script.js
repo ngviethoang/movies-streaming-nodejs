@@ -90,14 +90,16 @@ $(document).ready(() => {
 
                     if(Array.isArray(subtitlePaths)) {
                         for(let subtitlePath of subtitlePaths) {
-                            let lang = subtitlePath.split('/').splice(-1)[0].split('.')[0]
+                            if(subtitlePath !== undefined) {
+                                let lang = subtitlePath.split('/').splice(-1)[0].split('.')[0]
 
-                            player.addRemoteTextTrack({
-                                kind: 'captions',
-                                language: lang,
-                                label: lang,
-                                src: subtitlePath
-                            }, false)
+                                player.addRemoteTextTrack({
+                                    kind: 'captions',
+                                    language: lang,
+                                    label: lang,
+                                    src: subtitlePath
+                                }, false)
+                            }
                         }
                     }
 
