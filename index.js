@@ -19,4 +19,4 @@ app.get('/api/movies', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+app.listen(PORT, () => console.log(`http://localhost:${PORT}`));
