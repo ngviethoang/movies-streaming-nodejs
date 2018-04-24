@@ -15,6 +15,10 @@
 	<link href=".lib/css/videojs-seek-buttons.css" rel="stylesheet">
 	<link href=".lib/css/style.css" rel="stylesheet">
 
+	<script src=".lib/js/video.js"></script>
+	<script src=".lib/js/videojs-seek-buttons.min.js"></script>
+	<script src=".lib/js/videojs-contrib-hls.min.js"></script>
+
 </head>
 
 <body class="bg-dark">
@@ -23,7 +27,7 @@
 			<div class="col-md-8 col-12" id="videoContainer">
 				<video id="myVideo" class="video-js vjs-default-skin vjs-fluid" controls preload="auto"
 					poster='.lib/video-poster.png'
-					data-setup='{"aspectRatio":"16:9"}'>
+					data-setup='{ "aspectRatio":"16:9" }'>
 					<source src="a" type='video/mp4' />
 					<track kind="captions" src="a" />
 				</video>
@@ -95,9 +99,6 @@
 	<script src=".lib/js/jquery-3.3.1.min.js"></script>
 	<script src=".lib/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
 	<script src=".lib/js/vue.js"></script>
-	<script src=".lib/js/video.js"></script>
-	<script src=".lib/js/videojs-seek-buttons.min.js"></script>
-	<script src=".lib/js/videojs-contrib-hls.min.js"></script>
 	<script src=".lib/js/script.js"></script>
 </body>
 </html>
